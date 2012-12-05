@@ -11,7 +11,7 @@ def ichart_limits(dataset):
     lower_limit = mean - 3 * stdev
     upper_limit = mean + 3 * stdev
 
-    make_series = lambda x: pd.Series([x for _ in series])
+    make_series = lambda x: pd.Series([x for _ in series], index=dataset.index)
 
     return pd.DataFrame({
         dataset.columns[0]: series
