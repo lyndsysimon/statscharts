@@ -4,7 +4,7 @@ import unittest
 
 from controlcharts import *
 
-class TestControlCharts(unittest.TestCase):
+class TestIChart(unittest.TestCase):
     DATASET_SERIES = pd.Series([
         3.9756983644,
         3.7713126251,
