@@ -1,26 +1,36 @@
 import numpy as np
 import pandas as pd
 
-def ichart(dataframe):
-    if isinstance(dataframe, pd.DataFrame):
-        if len(dataframe.columns) != 1:
-            raise ValueError('`dataframe` may only contain one column.')
-        column_name = dataframe.columns[0]
-        series = dataframe[column_name]
-    elif isinstance(dataframe, pd.Series):
-        column_name = 'Data'
-        series = dataframe
+def ichart(data,sigmas=3):
+    if isinstance(data, pd.Series):
+        nested_input = False
+        series = list(data)
+    else:
+        try:
+            series = data[data.keys()[0]]
+            if len(data.keys()) != 1:
+                raise ValueError('Nested iterable contains multiple data series')
+            nested_input = True
+        except AttributeError:
+            series = data
+            nested_input = False
 
+    r = dict()
     stdev = np.std(series)
     mean = np.mean(series)
-    lower_limit = mean - 3 * stdev
-    upper_limit = mean + 3 * stdev
+    lower_limit = mean - sigmas * stdev
+    upper_limit = mean + sigmas * stdev
 
-    make_series = lambda x: pd.Series([x for _ in series], index=dataframe.index)
+    make_series = lambda x: [x for _ in series]
 
-    return pd.DataFrame({
-        column_name: series
-            , 'LCL': make_series(lower_limit)
-            , 'UCL': make_series(upper_limit)
-            , 'Mean': make_series(mean)
-        })
+    if nested_input:
+        r = data
+    else:
+        r = { 'data': series }
+
+    r['mean'] = make_series(mean)
+    r['lower_limit'] = make_series(lower_limit)
+    r['upper_limit'] = make_series(upper_limit)
+
+
+    return r
